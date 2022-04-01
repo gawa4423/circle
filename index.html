@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Circle</title>
+</head>
+<body>
+
+    <div id="p5page"></div>
+
+    <input  type="text"
+            id="textbox"
+            autocorrect="off" 
+            autocapitalize="off"
+    />
+
+    <button class="answerButton"
+        type="button"
+        onclick="OnButtonClick();"
+    >
+        解答する
+    </button>
+
+
+    <details>
+        <summary>問題を作成する</summary>
+        <input  type="text"
+        id="mondaiInput"
+        autocorrect="off" 
+        autocapitalize="off"
+        minlength="3" maxlength="7" />
+        <button class="mondaiButton"
+        type="button"
+        onclick="createProblem();"
+        >
+             問題作成
+        </button>
+        <div id="mondaiText"></div>
+    </details>
+
+    <!--p5 import-->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.4.0/p5.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.4.0/addons/p5.sound.min.js"></script>
+    <!--main JavaScript sorce import-->
+    <script src="sketch.js"></script>
+</body>
+</html>
