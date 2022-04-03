@@ -10,7 +10,7 @@ let answer = atob(getParam('p'));;
 let textbox= document.getElementById("textbox");
 let userAnswer="";
 
-const speed=0.7;
+const speed=0.5;
 const dsize=0.7;
 let letterNum=5;
 
@@ -59,6 +59,7 @@ function draw() {
         translate(width/2,height*0.4)
         //光の球
         cGroup.forEach((item)=>{
+                item.statusUpdate();
                 item.drawMe();
             }
         );
@@ -66,6 +67,7 @@ function draw() {
         noFill();
         stroke(0,0,100,10);
         circle(0,0,width*dsize);
+
     
     pop();
 
@@ -89,6 +91,16 @@ function draw() {
             }
         }
 
+        //クリア判定
+        clearFlg=true;
+        cGroup.forEach((item)=>{
+            if(item.r!==0){
+                clearFlg=false;
+            }
+        });
+        if(clearFlg){
+            text("clear",width/2,height/2);
+        }
 
     
 }
@@ -129,14 +141,10 @@ class Dot{
         this.r=rNumber;
         this.speed=sNumber;
         this.time=0;
+        this.particles=[];
     }
 
     drawMe(){
-        this.time++;
-        this.angle += this.speed;
-        this.x = this.r*Math.cos(this.angle/180*Math.PI)
-        this.y = this.r*Math.sin(this.angle/180*Math.PI)
-        
         //blendMode(BLEND);
         drawingContext.shadowBlur = this.size*3;
         drawingContext.shadowColor = this.c;
@@ -144,6 +152,17 @@ class Dot{
         blendMode(SCREEN);
         fill(this.c);
         circle(this.x,this.y,this.size);
+        
+        if(this.time%2===0){
+            this.particles.push(new particle(this.x,this.y,this.angle,this.speed,this.c))
+        }
+        for(let i=0;i<this.particles.length;i++){
+            this.particles[i].update()
+            this.particles[i].drawMe();
+            if(this.particles[i].isDead()){
+                this.particles.splice(i, 1);
+            }
+        };
         // if(userAnswer[this.i]){
         //     text(userAnswer[this.i],this.x,this.y)
         // }else{
@@ -153,8 +172,46 @@ class Dot{
     }
 
     statusUpdate(){
-
+        this.time++;
+        this.angle += this.speed;
+        this.x = this.r*Math.cos(this.angle/180*Math.PI);
+        this.y = this.r*Math.sin(this.angle/180*Math.PI);
     }
+}
+
+class particle{
+    constructor(px,py,pangle,pspeed,pcolor){
+        this.size=5*getRandom(0.5,1);
+        this.x = px * getRandom(0.97,1.03);
+        this.y = py * getRandom(0.97,1.03);
+        this.ax =  pspeed * getRandom(1,2) * Math.sin((pangle + getRandom(-15,15)) * ( Math.PI / 180 ));
+        this.ay = -pspeed * getRandom(1,2) * Math.cos((pangle + getRandom(-15,15)) * ( Math.PI / 180 ));
+        this.angle=pangle;
+        this.color=pcolor;
+        this.life=60;
+    }
+    update(){
+        this.life--;
+        this.size += -0.01
+        this.x+=this.ax;
+        this.y+=this.ay;
+        this.color.setAlpha(this.life/30*100);
+    }
+    drawMe(){
+        drawingContext.shadowBlur = this.size*3;
+        drawingContext.shadowColor = this.color;
+        blendMode(SCREEN);
+        fill(this.color);
+        circle(this.x,this.y,this.size);
+    }
+    isDead(){
+        return this.life<0;
+    }
+
+    
+
+    
+    
 }
 
 //answerをセット、もし不適ならデフォルトの表示に変更
@@ -251,3 +308,8 @@ function getParam(name, url) {
     if (!results[2]) return '';
     return decodeURIComponent(results[2].replace(/\+/g, " "));
 }
+
+ 
+function getRandom(min, max) {
+    return Math.random() * (max - min) + min;
+  }
